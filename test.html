@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAC-MAN in real life</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+    </script>
+
+    <!-- adding source for roads -->
+    <script src="smallUni.js"></script>
+</head>
+<body>
+    <h1>PAC-MAN in Real Life</h1>
+
+    <div id="overlay">
+        <button id="startButton" onclick="startGame()">Dive into<br>the Pac-Man<br>Adventure!</button>
+   </div>
+
+   <div id="ScoreBoard"></div>
+   <audio id = "intro" control src="Intro.mp3"></audio>
+    <div id="map"></div>
+    <script>
+    var score = 0;
+    document.getElementById('ScoreBoard').innerText = "Score: " + score ;
+        const audio1 =  document.getElementById("intro")
+        function startGame() {
+            document.getElementById("startButton").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("map").style.display = "block";
+            document.getElementById("ScoreBoard").style.display = "block";
+            setTimeout(() => {
+                marker.closePopup();
+                }, 3400);
+            audio1.play();
+
+        }
+        let element = document.body;
+       element.classList.toggle("dark");
+
+    var map = L.map('map').setView([35.725467, 51.383685], 19);
+        var CartoDB_VoyagerNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+
+    // adding sound effects 
+    var Chomp = new Audio("Chomp.mp3");
+    var Fruit = new Audio("Fruit.mp3");
+    var Death = new Audio("death.mp3");
+    var Ghost = new Audio("Ghost.mp3");
+
+
+
+</script>
+</body>
+</html>
+    
+    
+  
+    <script>
+
+    // adding street coins to the map    
+    var myIcon = L.icon({
+    iconUrl: 'pac-man-fortnite.gif',
+    iconSize: [20, 20],
+    popupAnchor:[0,-15],
+
+    });
+
+    var CheckPoint = 0
+    
+    function pointToLayerFunc(feature, latlng) {
+		return L.circle(latlng,{
+			radius : 0.5,
+			color : '#f7ab11',
+			fillColor : "#f5b951",
+			fillOpacity: 1,
+		})
+	}      
+    var myUni =  L.geoJSON(
+		roads, 
+		{	
+			pointToLayer: pointToLayerFunc, 
+		}
+	).addTo(map);
+
+    // user's position (Geolocation API)
+    navigator.geolocation.watchPosition(success, error, {enableHighAccuracy : true})
+
+    // uni
+    var marker = L.marker([35.725467, 51.383685],{icon: myIcon}).addTo(map) 
+    marker.bindPopup("Let's hunt some ghosts!", { closeButton: false});
+    marker.openPopup();
+
+        var userposition_Lat = 35.7397540;
+        var userposition_Lon = 51.2981034;
+        var myCherry = L.icon({ iconUrl: 'pixel-fruit-cherry-24x24.png', iconSize: [25, 25]});
+
+
+       function success(position){
+        userposition_Lat = position.coords.latitude ;
+        userposition_Lon = position.coords.longitude ;
+        if (marker){
+            map.removeLayer(marker);
+                }
+        marker = L.marker([userposition_Lat, userposition_Lon],{icon: myIcon}).addTo(map);
+        setInterval(onLocationFound(), 200); 
+    }
+
+
+        function onLocationFound() {
+
+                  var filterCoords = [userposition_Lat, userposition_Lon];
+
+                myUni.eachLayer(function(layer) {
+                    var pointCoords = layer.getLatLng();
+                    var dLat = pointCoords.lat - userposition_Lat
+                    var dLong = pointCoords.lng - userposition_Lon
+                    var distance = Math.sqrt(dLat ** 2 + dLong ** 2);
+                    layer.distanceToFilter = distance;
+                    CheckSituation();
+                });
+
+
+                myUni.eachLayer(function(layer) {
+                    if (layer.distanceToFilter <  0.000029) {
+                    score += 10
+                    Chomp.play()
+                    myUni.removeLayer(layer);
+                    
+                    }
+                });
+
+                
+                function calculateDistance(layer) {
+                    var pointCoords = layer.getLatLng();
+                    var dLat = pointCoords.lat - userposition_Lat;
+                    var dLong = pointCoords.lng - userposition_Lon;
+                    var distance = Math.sqrt(dLat ** 2 + dLong ** 2);
+                    return distance;
+                    }
+
+
+                // Cherry Fruit
+                if (score > 50 && CheckPoint == 0 ){
+                    var Cherry1 =L.marker([35.725156,51.3836456],{icon: myCherry}).addTo(map)
+                    if( calculateDistance(Cherry1) < 0.00003 ){
+                          map.removeLayer(cherry1);
+                          CheckPoint = 1 ;
+                          score += 100;
+                          Fruit.play()
+                        }   
+                }
+                if (score > 100 && CheckPoint == 1 ){
+                    var Cherry2 =L.marker([35.726156,51.3837456],{icon: myCherry}).addTo(map)   
+                    if( calculateDistance(Cherry2) < 0.00003 ){
+                    map.removeLayer(cherry2);
+                    CheckPoint = 2 ;
+                    Fruit.play()
+                    score += 100
+                }
+                }
+                if (score > 200 && CheckPoint == 2 ){
+                    var Cherry3 =L.marker([35.726356,51.3832886],{icon: myCherry}).addTo(map)
+                    if( calculateDistance(Cherry1)< 0.00003 ){
+                          map.removeLayer(cherry3);
+                          CheckPoint = 3 ;
+                           Fruit.play()
+                           score += 100
+                        }
+                }
+
+            }
+
+
+            function CheckSituation(){
+                document.getElementById('ScoreBoard').innerText = "Score: " + score ;
+
+            }
+
+            function error(err) {
+            if (err.code === 1 ){
+                alert("Let's see where you are ...");
+            } else {
+                alert("We can't see where you are!");
+            }
+        }
+
+</script>
+
+    
+
+

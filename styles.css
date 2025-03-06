@@ -1,0 +1,112 @@
+#map {
+    width: 100%;
+    height: 100vh;
+
+
+}
+body {
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}  
+
+@font-face {
+    font-family: PacMan;
+    src: url(PAC-FONT.TTF);
+  }
+
+
+/* #buttonContainer {
+    text-align: center;
+    background-color: #333;
+    color: white;
+} */
+
+
+#startButton {
+    line-height: 1.2;
+    font-family: PacMan;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 36px;
+    background-color: #ffffff00;
+    color: rgb(75, 6, 125); 
+    border: none;
+    border-radius: 30px;
+    cursor: pointer; 
+}
+
+#startButton:hover {
+    color: rgba(213, 181, 237, 0.658);
+}
+
+
+#overlay{
+position: absolute;
+text-align: center;
+z-index: 1000;
+background: rgba(205, 178, 231, 0.895);
+height: 100%;
+width: 100%;
+margin: 0;
+align-content: center;
+border-radius: 30px;
+}
+#overlay:hover{
+    background-color: #5c069f88;
+    color: rgba(213, 181, 237, 0.906);
+
+}
+#ScoreBoard{
+    font-family: Andale Mono, monospace;
+    font-size: 20px;
+    position: absolute;
+    text-align: center;
+    z-index: 1001;
+    background: rgba(0, 0, 0, 0.699);
+    color: #dcbeffd2;
+    height: 27px;
+    width: 180px;
+    margin: 0;
+    right: 0;
+    align-content: center;
+    border-radius: 25px;
+    display: none;
+    }
+
+h1{
+    font-family: PacMan;
+    color: #e0b929f7;
+    text-align: center;
+    font-size: 25px;
+    }
+    .mode {
+        float:right;
+    }
+    .change {
+        cursor: pointer;
+        border: 1px solid #555;
+        border-radius: 40%;
+        width: 20px;
+        text-align: center;
+        padding: 5px;
+        margin-left: 8px;
+    }
+    .dark{
+        background-color: #222;
+        color: #e6e6e6;
+    }
+
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+filter: invert(100%) hue-rotate(180deg) brightness(80%) contrast(72%);
+}
+.leaflet-popup-content-wrapper{
+    background :rgba(240, 191, 255, 0.572);
+}
+
+
